@@ -17,10 +17,31 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const validateForm = () => {
+    if (!email || !password) {
+      setError("Please fill in all fields");
+      return false;
+    }
+    if (mode === "join") {
+      if (!nickname || nickname.length < 2) {
+        setError("Nickname must be at least 2 characters");
+        return false;
+      }
+      if (!code || code.length < 4) {
+        setError("Invite code must be at least 4 characters");
+        return false;
+      }
+      if (!/^[A-Za-z0-9-_]+$/.test(code)) {
+        setError("Invite code can only contain letters, numbers and dashes");
+        return false;
+      }
+    }
+    return true;
+  };
+
   const handleSubmit = async () => {
     setError("");
-    if (!email || !password) { setError("Please fill all fields"); return; }
-    if (mode === "join" && (!nickname || !code)) { setError("Nickname and invite code required"); return; }
+    if (!validateForm()) return;
 
     setLoading(true);
     try {
@@ -33,9 +54,15 @@ export default function Login() {
       login(data.token, data.user);
       navigate("/dashboard");
     } catch (err) {
-      setError(err.message || "Something went wrong");
+      setError(err.message || "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSubmit();
     }
   };
 
@@ -77,23 +104,49 @@ export default function Login() {
         <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
           <div className="fade-up-2">
             <label className="input-label">Email</label>
-            <input className="input-field" type="email" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <input 
+              className="input-field" 
+              type="email" 
+              placeholder="your@email.com" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)}
+              onKeyPress={handleKeyPress}
+            />
           </div>
 
           <div className="fade-up-3">
             <label className="input-label">Password</label>
-            <input className="input-field" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <input 
+              className="input-field" 
+              type="password" 
+              placeholder="••••••••" 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyPress={handleKeyPress}
+            />
           </div>
 
           {mode === "join" && (
             <>
               <div className="fade-up-4">
                 <label className="input-label">Nickname</label>
-                <input className="input-field" placeholder="Moon, Star, Rose…" value={nickname} onChange={(e) => setNickname(e.target.value)} />
+                <input 
+                  className="input-field" 
+                  placeholder="Moon, Star, Rose…" 
+                  value={nickname} 
+                  onChange={(e) => setNickname(e.target.value)}
+                  maxLength={30}
+                />
               </div>
               <div className="fade-up-5">
                 <label className="input-label"><i className="bi bi-heart" /> Invitation Code</label>
-                <input className="input-field" placeholder="e.g. MOON-STAR-2024" value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} />
+                <input 
+                  className="input-field" 
+                  placeholder="e.g. MOON-STAR-2024" 
+                  value={code} 
+                  onChange={(e) => setCode(e.target.value.toUpperCase())}
+                  maxLength={50}
+                />
                 <p style={{ marginTop: "8px", fontSize: "12px", color: "rgba(255,255,255,0.7)" }}>
                   Create any code — share it with your partner
                 </p>
