@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Couple {
+  id         String   @id @default(cuid())
+  inviteCode String   @unique
+  createdAt  DateTime @default(now())
+
+  users    User[]
+  memories Memory[]
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  password     String
+  nickname     String
+  totalPoints  Int      @default(0)
+  streakDays   Int      @default(0)
+  lastActiveAt DateTime @default(now())
+  createdAt    DateTime @default(now())
+
+  coupleId String?
+  couple   Couple? @relation(fields: [coupleId], references: [id])
+
+  memories Memory[]
+  guesses  Guess[]
+}
+
+model Memory {
+  id            String     @id @default(cuid())
+  imageUrl      String
+  imagePublicId String
+  difficulty    Difficulty @default(MEDIUM)
+  secretMessage String?
+  songUrl       String?
+  isGuessed     Boolean    @default(false)
+  createdAt     DateTime   @default(now())
+
+  coupleId     String
+  couple       Couple @relation(fields: [coupleId], references: [id])
+
+  uploadedById String
+  uploadedBy   User   @relation(fields: [uploadedById], references: [id])
+
+  guess Guess?
+}
+
+model Guess {
+  id           String      @id @default(cuid())
+  guessText    String
+  pointsEarned Int         @default(0)
+  status       GuessStatus @default(PENDING)
+  createdAt    DateTime    @default(now())
+
+  memoryId String @unique
+  memory   Memory @relation(fields: [memoryId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum GuessStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
