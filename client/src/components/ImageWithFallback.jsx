@@ -5,8 +5,18 @@ export default function ImageWithFallback({ src, alt, style, className }) {
 
   if (error) {
     return (
-      <div style={{ width: "100%", height: "100%", minHeight: "140px", background: "linear-gradient(135deg, rgba(236,72,153,0.35), rgba(168,85,247,0.35))", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "40px", ...style }}>
-        <i className="bi bi-moon-stars" style={{ color: "rgba(255,255,255,0.6)" }} />
+      <div style={{ 
+        width: "100%", 
+        minHeight: "280px", 
+        maxHeight: "400px",
+        background: "linear-gradient(135deg, rgba(236,72,153,0.3), rgba(168,85,247,0.3))", 
+        display: "flex", 
+        alignItems: "center", 
+        justifyContent: "center", 
+        fontSize: "64px", 
+        ...style 
+      }}>
+        <i className="bi bi-image" style={{ color: "rgba(255,255,255,0.5)" }} />
       </div>
     );
   }

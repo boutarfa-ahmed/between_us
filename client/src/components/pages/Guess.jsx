@@ -108,8 +108,8 @@ export default function Guess() {
         )}
       </div>
 
-      <div className="glass fade-up-2" style={{ width: "100%", borderRadius: "24px", overflow: "hidden", marginBottom: "16px" }}>
-        <ImageWithFallback src={memory.imageUrl} alt="memory" style={{ width: "100%", height: "220px", objectFit: "cover", display: "block" }} />
+      <div className="glass fade-up-2" style={{ width: "100%", borderRadius: "24px", overflow: "hidden", marginBottom: "16px", boxShadow: "0 8px 32px rgba(0,0,0,0.3)" }}>
+        <ImageWithFallback src={memory.imageUrl} alt="memory" style={{ width: "100%", height: "auto", minHeight: "280px", maxHeight: "400px", objectFit: "contain", display: "block", background: "rgba(0,0,0,0.2)" }} />
       </div>
 
       <div style={{ width: "100%", display: "flex", gap: "10px", marginBottom: "20px", flexWrap: "wrap", alignItems: "center" }}>
