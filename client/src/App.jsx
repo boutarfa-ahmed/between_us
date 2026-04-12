@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthProvider";
 import { ToastProvider } from "./context/ToastProvider";
 import { useAuth } from "./context/useAuth";
+import { usePushNotifications } from "./hooks/usePushNotifications";
 
 import Login        from "./components/pages/Login";
 import Dashboard    from "./components/pages/Dashboard";
@@ -103,6 +104,8 @@ function PrivateRoute({ children }) {
 }
 
 export default function App() {
+  usePushNotifications();
+  
   return (
     <AuthProvider>
       <ToastProvider>

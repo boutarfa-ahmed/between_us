@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/useAuth.jsx";
 import { userApi } from "../../services/api.js";
 import { useToast } from "../../context/ToastProvider.jsx";
+import { subscribeToPush, unsubscribeFromPush } from "../../services/notifications.js";
 import Spinner from "../Spinner.jsx";
 
 export default function Profile() {
@@ -16,6 +17,29 @@ export default function Profile() {
   const [nickname, setNickname] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+
+  useEffect(() => {
+    if ("Notification" in window) {
+      setNotificationsEnabled(Notification.permission === "granted");
+    }
+  }, []);
+
+  const toggleNotifications = async () => {
+    if (notificationsEnabled) {
+      await unsubscribeFromPush();
+      setNotificationsEnabled(false);
+      addToast("Notifications disabled", "info");
+    } else {
+      const sub = await subscribeToPush();
+      if (sub) {
+        setNotificationsEnabled(true);
+        addToast("Notifications enabled! 🔔", "success");
+      } else {
+        addToast("Enable notifications in browser settings", "error");
+      }
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -134,6 +158,10 @@ export default function Profile() {
           <p style={{ color: "rgba(255,255,255,0.8)", fontSize: "14px" }}>Your partner hasn't joined yet</p>
         </div>
       )}
+
+      <button onClick={toggleNotifications} style={{ width: "100%", borderRadius: "18px", padding: "14px", fontSize: "14px", fontWeight: 600, color: notificationsEnabled ? "#4ade80" : "#fbbf24", background: notificationsEnabled ? "rgba(74,222,128,0.15)" : "rgba(251,191,36,0.15)", border: `1px solid ${notificationsEnabled ? "rgba(74,222,128,0.3)" : "rgba(251,191,36,0.3)"}`, cursor: "pointer", marginBottom: "12px", transition: "all 0.3s ease" }}>
+        <i className={`bi ${notificationsEnabled ? "bi-bell-fill" : "bi-bell"}`} /> {notificationsEnabled ? "Notifications On" : "Enable Notifications"}
+      </button>
 
       <button onClick={() => { logout(); addToast("Signed out", "info"); navigate("/login"); }} style={{ width: "100%", borderRadius: "18px", padding: "14px", fontSize: "14px", fontWeight: 600, color: "#fda4af", background: "rgba(251,113,133,0.15)", border: "1px solid rgba(251,113,133,0.3)", cursor: "pointer", transition: "all 0.3s ease" }}>
         <i className="bi bi-box-arrow-right" /> Sign Out
