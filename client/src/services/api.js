@@ -74,3 +74,9 @@ export const userApi = {
   getPartner:     ()         => request("GET", "/user/partner"),
   updateNickname: (nickname) => request("PUT", "/user/nickname", { nickname }),
 };
+
+export const pushApi = {
+  subscribe: (subscription) => request("POST", "/push/subscribe", subscription),
+  unsubscribe: (endpoint) => request("DELETE", "/push/unsubscribe", { endpoint }),
+  getVapidKey: () => request("GET", "/push/vapid-key"),
+};

@@ -1,6 +1,16 @@
 import prisma from "../lib/prisma.js";
+import { sendNotification } from "../routes/push.routes.js";
 
 const POINTS = { EASY: 30, MEDIUM: 50, HARD: 80 };
+
+async function notifyPartner(userId, coupleId, title, body) {
+  const partner = await prisma.user.findFirst({
+    where: { coupleId, id: { not: userId } },
+  });
+  if (partner) {
+    await sendNotification(partner.id, title, body);
+  }
+}
 
 export async function submitGuess(req, res) {
   try {
@@ -33,6 +43,8 @@ export async function submitGuess(req, res) {
       },
       include: { user: { select: { nickname: true } } },
     });
+
+    notifyPartner(user.id, user.coupleId, "New Guess! 🎯", `${user.nickname} guessed your memory`);
 
     return res.status(201).json({
       guess,
@@ -117,6 +129,8 @@ export async function decideGuess(req, res) {
       ]);
 
       await updateStreak(guess.userId);
+
+      notifyPartner(user.id, user.coupleId, "Guess Accepted! 🎉", `${user.nickname} accepted your guess! +${pointsEarned} pts`);
 
       return res.json({
         message: `Guess accepted! +${pointsEarned} points awarded ✨`,

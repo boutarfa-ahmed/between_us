@@ -1,8 +1,18 @@
 import prisma from "../lib/prisma.js";
 import { deleteImage } from "../lib/cloudinary.js";
+import { sendNotification } from "../routes/push.routes.js";
 
 const POINTS = { EASY: 30, MEDIUM: 50, HARD: 80 };
 const VALID_DIFFICULTIES = ["EASY", "MEDIUM", "HARD"];
+
+async function notifyPartner(userId, coupleId, title, body) {
+  const partner = await prisma.user.findFirst({
+    where: { coupleId, id: { not: userId } },
+  });
+  if (partner) {
+    await sendNotification(partner.id, title, body);
+  }
+}
 
 export async function createMemory(req, res) {
   try {
@@ -35,6 +45,8 @@ export async function createMemory(req, res) {
       include: { uploadedBy: { select: { nickname: true } } },
     });
 
+    notifyPartner(user.id, user.coupleId, "New Memory! 📸", `${user.nickname} shared a new memory with you`);
+    
     return res.status(201).json({ memory });
 
   } catch (err) {

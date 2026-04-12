@@ -6,6 +6,7 @@ import { helmetConfig, apiLimiter, sanitizeInput } from "./middleware/security.j
 import authRoutes from "./routes/auth.routes.js";
 import memoriesRoutes from "./routes/memories.routes.js";
 import userRoutes from "./routes/user.routes.js";
+import pushRoutes from "./routes/push.routes.js";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -49,6 +50,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/memories", memoriesRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/push", pushRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });

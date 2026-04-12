@@ -77,3 +77,14 @@ enum GuessStatus {
   ACCEPTED
   REJECTED
 }
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
