@@ -34,11 +34,14 @@ export async function subscribeToPush() {
       applicationServerKey: urlBase64ToUint8Array(publicKey),
     });
 
+    const subJson = subscription.toJSON();
+    console.log("Subscription created:", subJson);
+
     const subscriptionData = {
-      endpoint: subscription.endpoint,
+      endpoint: subJson.endpoint,
       keys: {
-        p256dh: subscription.keys.p256dh,
-        auth: subscription.keys.auth,
+        p256dh: subJson.keys.p256dh,
+        auth: subJson.keys.auth,
       },
     };
 
