@@ -50,9 +50,12 @@ router.post("/subscribe", authenticate, async (req, res) => {
 router.delete("/unsubscribe", authenticate, async (req, res) => {
   try {
     const { endpoint } = req.body;
-    await prisma.pushSubscription.delete({ where: { endpoint } });
+    await prisma.pushSubscription.deleteMany({
+      where: { endpoint },
+    });
     res.json({ message: "Unsubscribed" });
   } catch (err) {
+    console.error("Unsubscribe error:", err.message);
     res.status(400).json({ message: "Failed to unsubscribe" });
   }
 });
