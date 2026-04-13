@@ -25,14 +25,8 @@ router.post("/subscribe", authenticate, async (req, res) => {
   try {
     const { endpoint, keys } = subscribeSchema.parse(req.body);
     
-    await prisma.pushSubscription.upsert({
-      where: { endpoint },
-      update: {
-        p256dh: keys.p256dh,
-        auth: keys.auth,
-        userId: req.user.id,
-      },
-      create: {
+    await prisma.pushSubscription.create({
+      data: {
         userId: req.user.id,
         endpoint,
         p256dh: keys.p256dh,
