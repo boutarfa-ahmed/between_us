@@ -63,14 +63,24 @@ export async function sendNotification(userId, title, body, icon = "♥") {
     where: { userId },
   });
 
+  if (subscriptions.length === 0) {
+    console.log(`No push subscriptions for user ${userId}`);
+    return;
+  }
+
+  console.log(`Sending notification to ${subscriptions.length} subscription(s): ${title}`);
+
   const payload = JSON.stringify({ title, body, icon, badge: "♥" });
 
   for (const sub of subscriptions) {
     try {
       await webpush.sendNotification(sub, payload);
+      console.log(`Notification sent to ${sub.endpoint.slice(0, 50)}...`);
     } catch (err) {
-      if (err.statusCode === 410) {
+      console.error(`Push failed for ${sub.endpoint.slice(0, 50)}...:`, err.message);
+      if (err.statusCode === 410 || err.statusCode === 404) {
         await prisma.pushSubscription.delete({ where: { endpoint: sub.endpoint } });
+        console.log(`Deleted stale subscription`);
       }
     }
   }

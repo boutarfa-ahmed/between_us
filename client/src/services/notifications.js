@@ -34,7 +34,15 @@ export async function subscribeToPush() {
       applicationServerKey: urlBase64ToUint8Array(publicKey),
     });
 
-    await pushApi.subscribe(subscription);
+    const subscriptionData = {
+      endpoint: subscription.endpoint,
+      keys: {
+        p256dh: subscription.keys.p256dh,
+        auth: subscription.keys.auth,
+      },
+    };
+
+    await pushApi.subscribe(subscriptionData);
     console.log("Push subscription successful");
     return subscription;
   } catch (err) {
